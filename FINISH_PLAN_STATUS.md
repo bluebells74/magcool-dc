@@ -40,7 +40,7 @@ Most of the gap is the optimizer choosing a different design, not a modelling di
 3. The utilization cap of 1.0 is a judgment call, not a sourced number.
 4. The optimizer's `regen_effectiveness` variable has no effect when the NTU model is on (checked directly). The value in the Pareto tables is not the effectiveness actually used.
 5. Repeatability was checked at small run sizes only.
-6. Four tests in `test_design_recommendations.py` fail on one Windows PC because the system security policy blocks a pandas file. The same tests pass elsewhere.
+6. On one Windows PC, a security policy blocks a pandas file. That stops 3 test files (72 tests) from loading and fails 4 more. Result on that PC: 673 passed, 4 failed, 3 collection errors, all from the pandas block. The full suite passed 749/749 on the same PC earlier in the project, before the block appeared. The full suite is being rerun on GitHub Actions.
 
 ## Not done yet
 
