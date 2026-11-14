@@ -1,0 +1,20 @@
+Constrained NSGA-III, seeds [1, 2, 3, 4, 5]
+Limits: specific power <= 1600 W/kg, utilization <= 1.0
+(utilization cap of 1.0 is a judgment call, not a sourced number)
+
+metric                       mean     stdev        min        max
+n_designs                   21.00      4.64      14.00      27.00
+best_COP                    10.53      0.10      10.35      10.59
+best_COP_Qc_W            12445.05   6496.52    5608.42   19980.78
+best_COP_mass_kg             9.56      4.69       4.77      14.78
+knee_COP                    10.31      0.25       9.94      10.53
+knee_Qc_W                12277.83   5636.33    7376.30   21144.59
+knee_mass_kg                 8.07      3.81       4.64      14.12
+knee_cost_USD             4847.58   2216.84    3205.80    8474.30
+
+Per seed:
+  seed 1: best COP 10.554 (La(Fe,Si)13Hy (tuned, Tc=285.3K)), knee COP 10.461 / 7376 W / 4.64 kg / $3205.8
+  seed 2: best COP 10.354 (La(Fe,Si)13Hy (tuned, Tc=285.3K)), knee COP 10.165 / 9685 W / 6.55 kg / $3801.3
+  seed 3: best COP 10.565 (La(Fe,Si)13Hy (tuned, Tc=285.3K)), knee COP 9.936 / 21145 W / 14.12 kg / $8474.3
+  seed 4: best COP 10.569 (La(Fe,Si)13Hy (tuned, Tc=285.3K)), knee COP 10.534 / 8696 W / 5.68 kg / $3312.0
+  seed 5: best COP 10.591 (La(Fe,Si)13Hy (tuned, Tc=285.3K)), knee COP 10.441 / 14487 W / 9.37 kg / $5444.5

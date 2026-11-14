@@ -1,0 +1,6 @@
+seed,n_designs,best_COP,best_COP_Qc_W,best_COP_mass_kg,best_COP_material,knee_COP,knee_Qc_W,knee_mass_kg,knee_cost_USD,knee_material,seconds
+1,14,10.554,19980.78,14.78,"La(Fe,Si)13Hy (tuned, Tc=285.3K)",10.461,7376.3,4.64,3205.8,"La(Fe,Si)13Hy (tuned, Tc=285.3K)",5
+2,22,10.354,8009.71,5.08,"La(Fe,Si)13Hy (tuned, Tc=285.3K)",10.165,9685.1,6.55,3801.3,"La(Fe,Si)13Hy (tuned, Tc=285.3K)",5
+3,27,10.565,5608.42,4.77,"La(Fe,Si)13Hy (tuned, Tc=285.3K)",9.936,21144.59,14.12,8474.3,"La(Fe,Si)13Hy (tuned, Tc=285.3K)",5
+4,21,10.569,18708.66,13.78,"La(Fe,Si)13Hy (tuned, Tc=285.3K)",10.534,8696.37,5.68,3312.0,"La(Fe,Si)13Hy (tuned, Tc=285.3K)",5
+5,21,10.591,9917.7,9.37,"La(Fe,Si)13Hy (tuned, Tc=285.3K)",10.441,14486.78,9.37,5444.5,"La(Fe,Si)13Hy (tuned, Tc=285.3K)",5
