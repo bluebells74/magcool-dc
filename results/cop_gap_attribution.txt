@@ -1,0 +1,22 @@
+COP gap attribution, Gd regenerator, 10 K span
+Each row changes one factor on top of the row above.
+
+step                                                                                          COP_elec  x prev    Qc [W]
+Baseline: 2 T, 2 Hz, 5 kg, 0.08 kg/s, const eps 0.85, const 15% loss                             4.629            1121.8
++ state-dependent loss model                                                                     1.817    0.39    1121.8
++ effectiveness from NTU (not constant)                                                          2.031    1.12    1280.1
++ optimizer's field/frequency/flow/mass (2.993 T, 0.322 Hz, 0.4999 kg/s, 11.55 kg)               8.949    4.41   10091.1
++ optimizer's blow fraction 0.414                                                               10.430    1.17   12640.0
++ optimizer's T_cold 291.0 K (vs 291.15 K)                                                      10.429    1.00   12760.6
++ particle diameter 0.390 mm and bed area 0.002 m^2 (optimizer path; FITTED diameter)            9.494    0.91   12778.7
+
+Total: 4.629 -> 9.494 = 2.05x (NSGA-III reported 9.494 = 2.05x)
+
+Caveats:
+  - 9.494 comes from a synthetic test fixture (tests/test_design_recommendations.py)
+    with Qc = 14186 W and no particle diameter. Under the current code the
+    matching design delivers Qc = 12779 W, so the cooling power does NOT reproduce.
+  - The diameter 0.390 mm is fitted to hit 9.494, not a recorded optimizer value.
+  - Most of the gap (the 'move to optimizer design point' step) is simply that the
+    optimizer runs a different design (bigger field, lower frequency, more mass),
+    not a modelling difference.
