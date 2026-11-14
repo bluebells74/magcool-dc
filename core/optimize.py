@@ -257,7 +257,16 @@ def _material_candidates(T_mid_K=T_MID_K, mu0H_max_for_tuning=2.0):
 class AMRDesignProblem(ElementwiseProblem):
     def __init__(self, material=GADOLINIUM, family_name="Gd",
                  use_geometric_magnet_mass=False, material_density_kg_m3=None,
-                 material_sigma_e_S_per_m=None, max_specific_power_W_per_kg=None):
+                 material_sigma_e_S_per_m=None, max_specific_power_W_per_kg=None,
+                 max_utilization=None):
+        # max_utilization (finish-plan addition, default None = unconstrained):
+        # feasibility ceiling on the regenerator fluid utilization factor
+        # U = mdot*cp_f / (2*f*m_reg*cp_solid) from core/thermal.py. The model
+        # clips U at 1.0 inside its effectiveness correction, so designs with
+        # U > 1 are NOT penalized further and can look better than they
+        # physically are. A cap of 1.0 is a judgment call, not a sourced
+        # number -- confirm against the literature before publishing.
+        self.max_utilization = max_utilization
         # max_specific_power_W_per_kg (finish-plan addition, default None =
         # unconstrained, identical to previous behavior): feasibility ceiling
         # on cooling power per kg of regenerator, Qc/mass <= limit. The best
@@ -280,7 +289,8 @@ class AMRDesignProblem(ElementwiseProblem):
         self.material_sigma_e_S_per_m = material_sigma_e_S_per_m
         super().__init__(
             n_var=7, n_obj=3,
-            n_constr=0 if max_specific_power_W_per_kg is None else 1,
+            n_constr=(0 if max_specific_power_W_per_kg is None else 1)
+                     + (0 if max_utilization is None else 1),
             xl=_XL, xu=_XU,
         )
 
@@ -299,9 +309,15 @@ class AMRDesignProblem(ElementwiseProblem):
         f2 = -result.Qc
         f3 = cost_index(mu0H, mass, self.family_name, self.use_geometric_magnet_mass)
         out["F"] = [f1, f2, f3]
+        # pymoo convention: G <= 0 is feasible
+        g = []
         if self.max_specific_power_W_per_kg is not None:
-            # pymoo convention: G <= 0 is feasible
-            out["G"] = [result.Qc / mass - self.max_specific_power_W_per_kg]
+            g.append(result.Qc / mass - self.max_specific_power_W_per_kg)
+        if self.max_utilization is not None:
+            info = getattr(sys_, "_last_ntu_info", None)
+            g.append((info["U"] if info else 0.0) - self.max_utilization)
+        if g:
+            out["G"] = g
 
 
 def _row_from_xf(x, f, material_label):
@@ -699,7 +715,8 @@ def run_optimization_for_material(material, family_name, material_label,
                                     out_csv=None, use_geometric_magnet_mass=False,
                                     material_density_kg_m3=None,
                                     material_sigma_e_S_per_m=None,
-                                    max_specific_power_W_per_kg=None):
+                                    max_specific_power_W_per_kg=None,
+                                    max_utilization=None):
     """Runs NSGA-III for a single material candidate. This is the
     per-family sub-search of the "option (b)" material
     co-optimization (see module docstring item 2). `pop_size`/`n_gen` are
@@ -731,7 +748,8 @@ def run_optimization_for_material(material, family_name, material_label,
                                 use_geometric_magnet_mass=use_geometric_magnet_mass,
                                 material_density_kg_m3=material_density_kg_m3,
                                 material_sigma_e_S_per_m=material_sigma_e_S_per_m,
-                                max_specific_power_W_per_kg=max_specific_power_W_per_kg)
+                                max_specific_power_W_per_kg=max_specific_power_W_per_kg,
+                                max_utilization=max_utilization)
     res = pymoo_minimize(problem, algorithm, ("n_gen", n_gen), seed=seed, verbose=False)
 
     if res.X is None:   # constrained run found no feasible design
@@ -770,7 +788,7 @@ def run_optimization(pop_size=40, n_gen=25, seed=1,
                       out_csv="results/pareto_front.csv",
                       per_material_out_dir="results/pareto_front_by_material",
                       use_geometric_magnet_mass=False,
-                      max_specific_power_W_per_kg=None):
+                      max_specific_power_W_per_kg=None, max_utilization=None):
     """runs NSGA-III separately for each material candidate
     (`_material_candidates()`), writes each material's own Pareto front to
     `per_material_out_dir/<label>.csv`, then merges all candidate rows and
@@ -813,7 +831,8 @@ def run_optimization(pop_size=40, n_gen=25, seed=1,
             use_geometric_magnet_mass=use_geometric_magnet_mass,
             material_density_kg_m3=material_density_kg_m3,
             material_sigma_e_S_per_m=material_sigma_e_S_per_m,
-            max_specific_power_W_per_kg=max_specific_power_W_per_kg)
+            max_specific_power_W_per_kg=max_specific_power_W_per_kg,
+            max_utilization=max_utilization)
         per_material_rows[label] = rows
         all_rows.extend(rows)
         print(f"  {label:<40} {len(rows)} Pareto-optimal design(s) found"
